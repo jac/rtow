@@ -1,4 +1,8 @@
 use std::io::{self, Write};
+mod colour;
+mod vec3;
+
+use vec3::Colour;
 
 fn main() {
     // Acquire a handle to stdout
@@ -19,12 +23,9 @@ fn main() {
             let g = (j as f64) / ((image_height-1) as f64);
             let b = 0.25;
 
-            let ir = (255.99 * r) as u8;
-            let ig = (255.99 * g) as u8;
-            let ib = (255.99 * b) as u8;
-            
-            let rgb = format!("{} {} {}\n", ir, ig, ib);
-            handle.write_all(rgb.as_bytes()).expect("Failed to write pixel");
+            let pixel = Colour::from((r, g, b));
+            colour::write_colour(&mut handle, pixel);
         }
     }
+    
 }
