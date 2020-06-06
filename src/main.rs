@@ -6,10 +6,24 @@ mod ray;
 use vec3::{Colour, Vec3, Point3};
 use ray::Ray;
 
+fn hit_sphere(center: &Point3, radius: f64, ray: &Ray) -> bool {
+    // Quadratic formula
+    let oc = ray.origin - *center;
+    let a = Vec3::dot(ray.direction, ray.direction);
+    let b = 2.0 * Vec3::dot(oc, ray.direction);
+    let c = Vec3::dot(oc, oc) - radius * radius;
+    let discriminant = b*b - 4.0 * a * c;
+    discriminant > 0.0
+}
+
 fn ray_colour(ray: &Ray) -> Colour {
-    let unit_direction = Vec3::unit_vector(ray.direction);
-    let t = 0.5 * (unit_direction.y + 1.0);
-    (1.0 - t) * Colour::from((1.0, 1.0, 1.0)) + t * Colour::from((0.5, 0.7, 1.0))
+    if hit_sphere(&Point3::from((0.0, 0.0, -1.0)), 0.5, &ray) {
+        Colour::from((1.0, 0.0, 0.0))
+    } else {
+        let unit_direction = Vec3::unit_vector(ray.direction);
+        let t = 0.5 * (unit_direction.y + 1.0);
+        (1.0 - t) * Colour::from((1.0, 1.0, 1.0)) + t * Colour::from((0.5, 0.7, 1.0))
+    }
 }
 
 fn main() {
