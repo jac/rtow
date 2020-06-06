@@ -11,6 +11,7 @@ pub type Point3 = Vec3;
 pub type Colour = Vec3;
 
 impl Vec3 {
+    /// Create a Vec3{x: 0.0, y: 0.0, z: 0.0}
     pub fn new() -> Vec3 {
         Vec3{x: 0.0, y: 0.0, z: 0.0}
     }
