@@ -1,10 +1,9 @@
 use std::io::{self, Write};
-mod colour;
 mod vec3;
-mod ray;
+mod tracing;
 
-use vec3::{Colour, Vec3, Point3};
-use ray::Ray;
+use vec3::{Colour, Point3, Vec3};
+use tracing::Ray;
 
 fn hit_sphere(center: &Point3, radius: f64, ray: &Ray) -> bool {
     // Quadratic formula
@@ -57,7 +56,7 @@ fn main() {
             let ray = Ray::new(origin, lower_left_corner + u * horizontal + v * vertical - origin);
 
             let pixel_colour = ray_colour(&ray);
-            colour::write_colour(&mut handle, pixel_colour);
+            vec3::write_colour(&mut handle, pixel_colour);
         }
     }
     

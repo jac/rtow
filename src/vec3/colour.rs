@@ -1,5 +1,5 @@
 use std::io::{self, Write};
-use super::vec3::Colour;
+use super::Colour;
 
 pub fn write_colour(stdout: &mut io::StdoutLock, colour: Colour) {
     let pixel = 
