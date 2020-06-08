@@ -1,6 +1,8 @@
 use std::convert::From;
 use std::ops;
 
+use crate::util::random_double;
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Vec3 {
     pub x: f64,
@@ -17,6 +19,39 @@ impl Vec3 {
             x: 0.0,
             y: 0.0,
             z: 0.0,
+        }
+    }
+
+    pub fn random(min: f64, max: f64) -> Vec3 {
+        Vec3 {
+            x: random_double(min, max),
+            y: random_double(min, max),
+            z: random_double(min, max),
+        }
+    }
+
+    pub fn random_in_unit_sphere() -> Vec3 {
+        loop {
+            let p = Vec3::random(-1.0, 1.0);
+            if p.length_squared() < 1.0 {
+                return p;
+            }
+        }
+    }
+
+    // pub fn random_unit_vector() -> Vec3 {
+    //     let a = random_double(0.0, 2.0*PI);
+    //     let z = random_double(-1.0, 1.0);
+    //     let r = (1.0 - z * z).sqrt();
+    //     Vec3::from((r * a.cos(), r * a.sin(), z))
+    // }
+
+    pub fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
+        let in_unit_sphere = Vec3::random_in_unit_sphere();
+        if Vec3::dot(in_unit_sphere, *normal) > 0.0 {
+            in_unit_sphere
+        } else {
+            -in_unit_sphere
         }
     }
 

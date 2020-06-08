@@ -8,9 +8,9 @@ pub fn write_colour(stdout: &mut io::StdoutLock, pixel_colour: Colour, samples_p
     let mut b = pixel_colour.z;
 
     let scale = 1.0 / samples_per_pixel as f64;
-    r *= scale;
-    g *= scale;
-    b *= scale;
+    r = (scale * r).sqrt();
+    g = (scale * g).sqrt();
+    b = (scale * b).sqrt();
 
     let pixel = format!(
         "{} {} {}\n",
