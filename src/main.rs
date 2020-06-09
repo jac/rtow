@@ -1,6 +1,5 @@
 use std::f64::INFINITY;
 use std::io::{self, Write};
-use std::rc::Rc;
 
 mod tracing;
 mod util;
@@ -22,7 +21,7 @@ fn ray_colour(ray: &Ray, world: &dyn Hittable, depth: usize) -> Colour {
         // let target = rec.p + rec.normal + Vec3::random_unit_vector();
         // Hemispherical scattering
         let target = rec.p + Vec3::random_in_hemisphere(&rec.normal);
-        0.5 * ray_colour(&Ray::new(rec.p, target - rec.p), world, depth -1)
+        0.5 * ray_colour(&Ray::new(rec.p, target - rec.p), world, depth - 1)
     } else {
         let unit_direction = Vec3::unit_vector(ray.direction);
         let t = 0.5 * (unit_direction.y + 1.0);
@@ -48,8 +47,8 @@ fn main() {
         .expect("Failed to write header");
 
     let mut world = HittableList::new();
-    world.add(Rc::new(Sphere::new(Point3::from((0.0, 0.0, -1.0)), 0.5)));
-    world.add(Rc::new(Sphere::new(
+    world.add(Box::new(Sphere::new(Point3::from((0.0, 0.0, -1.0)), 0.5)));
+    world.add(Box::new(Sphere::new(
         Point3::from((0.0, -100.5, -1.0)),
         100.0,
     )));
