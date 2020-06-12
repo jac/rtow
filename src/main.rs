@@ -1,4 +1,7 @@
+mod tracing;
+
 use std::io::{self, Write};
+use tracing::Colour;
 
 const IMAGE_WIDTH: usize = 256;
 const IMAGE_HEIGHT: usize = 256;
@@ -18,19 +21,20 @@ fn main() -> Result<(), io::Error> {
 
     // Image Contents
     for vert in (0..IMAGE_HEIGHT).rev() {
-        write!(stderr, "\rScanlines remaining: {0:1$}", vert + 1, text_width)?;
-        stderr.flush()?;
+        write!(
+            stderr,
+            "\rScanlines remaining: {0:1$}",
+            vert + 1,
+            text_width
+        )?;
 
         for hor in 0..IMAGE_WIDTH {
-            let r = (hor as f64) / (IMAGE_WIDTH - 1) as f64;
-            let g = (vert as f64) / (IMAGE_HEIGHT - 1) as f64;
-            let b = 0.25;
-
-            let ir = (255.99 * r) as u8;
-            let ig = (255.99 * g) as u8;
-            let ib = (255.99 * b) as u8;
-
-            writeln!(stdout, "{} {} {}", ir, ig, ib)?;
+            let pixel_colour = Colour::new(
+                (hor as f64) / ((IMAGE_WIDTH as f64) - 1.0),
+                (vert as f64) / ((IMAGE_HEIGHT as f64) - 1.0),
+                0.25,
+            );
+            pixel_colour.write_colour(stdout)?;
         }
     }
 
