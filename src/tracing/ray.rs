@@ -7,10 +7,7 @@ pub struct Ray {
 
 impl Ray {
     pub fn new(origin: Point3, direction: Vec3) -> Self {
-        Ray {
-            origin,
-            direction,
-        }
+        Ray { origin, direction }
     }
 
     // P(t)= A + t * b

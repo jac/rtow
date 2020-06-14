@@ -23,7 +23,7 @@ impl Vec3 {
         Vec3 {
             x: self.y * other.z - self.z * other.y,
             y: self.z * other.x - self.x * other.z,
-            z: self.x * other.y - self.y * other.x
+            z: self.x * other.y - self.y * other.x,
         }
     }
 

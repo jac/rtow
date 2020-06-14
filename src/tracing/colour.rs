@@ -9,6 +9,7 @@ impl Colour {
             (255.99 * self.x) as u8,
             (255.99 * self.y) as u8,
             (255.99 * self.z) as u8
-        ).expect("OKay");
+        )
+        .expect("OKay");
     }
 }
