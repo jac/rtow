@@ -74,6 +74,10 @@ impl Vec3 {
         }
     }
 
+    pub fn reflect(v: &Vec3, n: &Vec3) -> Self {
+        *v - 2.0 * v.dot(n) * *n
+    }
+
     pub fn length(&self) -> f64 {
         self.length_squared().sqrt()
     }

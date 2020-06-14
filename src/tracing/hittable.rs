@@ -1,8 +1,10 @@
-use super::{Point3, Ray, Vec3};
+use super::{Material, Point3, Ray, Vec3};
+use std::rc::Rc;
 
 pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
+    pub material: Rc<dyn Material>,
     pub t: f64,
     pub front_face: bool,
 }
