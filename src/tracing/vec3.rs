@@ -1,4 +1,6 @@
-use std::ops;
+use crate::util;
+
+use std::{f64::consts::PI, ops};
 
 #[derive(Copy, Clone)]
 pub struct Vec3 {
@@ -13,6 +15,51 @@ pub type Colour = Vec3;
 impl Vec3 {
     pub const fn new(x: f64, y: f64, z: f64) -> Self {
         Vec3 { x, y, z }
+    }
+
+    pub fn random() -> Self {
+        Vec3 {
+            x: util::random(),
+            y: util::random(),
+            z: util::random(),
+        }
+    }
+
+    pub fn random_range(min: f64, max: f64) -> Self {
+        Vec3 {
+            x: util::random_range(min, max),
+            y: util::random_range(min, max),
+            z: util::random_range(min, max),
+        }
+    }
+
+    pub fn random_in_unit_sphere() -> Self {
+        loop {
+            let p = Vec3::random_range(-1.0, 1.0);
+            if p.length_squared() <= 1.0 {
+                return p;
+            }
+        }
+    }
+
+    pub fn random_unit_vector() -> Self {
+        let a = util::random_range(0.0, 2.0 * PI);
+        let z = util::random_range(-1.0, 1.0);
+        let r = (1.0 - z * z).sqrt();
+        Vec3 {
+            x: r * a.cos(),
+            y: r * a.sin(),
+            z,
+        }
+    }
+
+    pub fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
+        let in_unit_sphere = Vec3::random_in_unit_sphere();
+        if in_unit_sphere.dot(normal) > 0.0 {
+            in_unit_sphere
+        } else {
+            -in_unit_sphere
+        }
     }
 
     pub fn dot(&self, other: &Self) -> f64 {

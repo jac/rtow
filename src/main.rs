@@ -5,12 +5,20 @@ use std::error::Error;
 use std::f64::INFINITY;
 use std::fmt::Write as fmtWrite;
 use std::io::{self, Write as ioWrite};
-use tracing::{Camera, Colour, Hittable, HittableList, Point3, Ray, Sphere};
+use tracing::{Camera, Colour, Hittable, HittableList, Point3, Ray, Sphere, Vec3};
 use util::random;
 
-fn ray_colour(ray: &Ray, world: &HittableList) -> Colour {
-    if let Some(hit) = world.hit(ray, 0.0, INFINITY) {
-        0.5 * (hit.normal + Colour::new(1.0, 1.0, 1.0))
+fn ray_colour(ray: &Ray, world: &HittableList, depth: usize) -> Colour {
+    if depth == 0 {
+        Colour::default()
+    } else if let Some(hit) = world.hit(ray, 0.001, INFINITY) {
+        // RTOW Hack
+        // let target = hit.p + hit.normal + Vec3::random_in_unit_sphere();
+        // True Lambertian
+        let target = hit.p + hit.normal + Vec3::random_unit_vector();
+        // Hemispherical Scattering
+        // let target = hit.p + Vec3::random_in_hemisphere(&hit.normal);
+        0.5 * ray_colour(&Ray::new(hit.p, target - hit.p), world, depth - 1)
     } else {
         let unit_direction = ray.direction.unit_vector();
         let t = 0.5 * (unit_direction.y + 1.0);
@@ -23,6 +31,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     const IMAGE_WIDTH: usize = 384;
     const IMAGE_HEIGHT: usize = ((IMAGE_WIDTH as f64) / ASPECT_RATIO) as usize;
     const SAMPLES_PER_PIXEL: usize = 100;
+    const MAX_DEPTH: usize = 50;
 
     // Stdout for PPM data
     let stdout = io::stdout();
@@ -58,7 +67,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 let v = (random() + vert as f64) / ((IMAGE_HEIGHT as f64) - 1.0);
 
                 let ray = cam.get_ray(u, v);
-                pixel_colour += ray_colour(&ray, &world);
+                pixel_colour += ray_colour(&ray, &world, MAX_DEPTH);
             }
             pixel_colour.write_colour(&mut output, SAMPLES_PER_PIXEL)?;
         }
