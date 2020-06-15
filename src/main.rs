@@ -6,9 +6,7 @@ use std::f64::INFINITY;
 use std::fmt::Write as fmtWrite;
 use std::io::{self, Write as ioWrite};
 use std::rc::Rc;
-use tracing::{
-    Camera, Colour, Dielectric, Hittable, HittableList, Lambertian, Metal, Point3, Ray, Sphere,
-};
+use tracing::*;
 use util::random;
 
 fn ray_colour(ray: &Ray, world: &HittableList, depth: usize) -> Colour {
@@ -62,7 +60,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     world.add(Box::new(Sphere::new(
         Point3::new(1.0, 0.0, -1.0),
         0.5,
-        Rc::new(Metal::new(Colour::new(0.8, 0.6, 0.2), 0.3)),
+        Rc::new(Metal::new(Colour::new(0.8, 0.6, 0.2), 0.0)),
     )));
     world.add(Box::new(Sphere::new(
         Point3::new(-1.0, 0.0, -1.0),
@@ -75,7 +73,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         Rc::new(Dielectric::new(1.5)),
     )));
 
-    let cam = Camera::new();
+    let cam = Camera::new(
+        Point3::new(-2.0, 2.0, 1.0),
+        Point3::new(0.0, 0.0, -1.0),
+        Vec3::new(0.0, 1.0, 0.0),
+        20.0,
+        ASPECT_RATIO,
+    );
 
     for vert in (0..IMAGE_HEIGHT).rev() {
         write!(
