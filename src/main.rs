@@ -50,7 +50,11 @@ fn random_scene() -> HittableList {
     world.add(Box::new(Sphere::new(Point3::new(0.0, 1.0, 0.0), 1.0, mat1)));
 
     let mat2 = Rc::new(Lambertian::new(Colour::new(0.4, 0.2, 0.1)));
-    world.add(Box::new(Sphere::new(Point3::new(-4.0, 1.0, 0.0), 1.0, mat2)));
+    world.add(Box::new(Sphere::new(
+        Point3::new(-4.0, 1.0, 0.0),
+        1.0,
+        mat2,
+    )));
 
     let mat3 = Rc::new(Metal::new(Colour::new(0.7, 0.6, 0.5), 0.0));
     world.add(Box::new(Sphere::new(Point3::new(4.0, 1.0, 0.0), 1.0, mat3)));
