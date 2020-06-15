@@ -9,6 +9,55 @@ use std::rc::Rc;
 use tracing::*;
 use util::random;
 
+fn random_scene() -> HittableList {
+    let mut world = HittableList::new();
+    let ground_material = Rc::new(Lambertian::new(Colour::new(0.5, 0.5, 0.5)));
+    world.add(Box::new(Sphere::new(
+        Point3::new(0.0, -1000.0, 0.0),
+        -1000.0,
+        ground_material,
+    )));
+
+    for a in -11..11 {
+        for b in -11..11 {
+            let choose_mat = random();
+            let center = Point3::new(a as f64 + 0.9 * random(), 0.2, b as f64 + 0.9 * random());
+
+            if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
+                let material: Rc<dyn Material>;
+
+                if choose_mat < 0.8 {
+                    // diffuse
+                    let albedo = Colour::random() * Colour::random();
+                    material = Rc::new(Lambertian::new(albedo));
+                    world.add(Box::new(Sphere::new(center, 0.2, material)))
+                } else if choose_mat < 0.95 {
+                    // metal
+                    let albedo = Colour::random();
+                    let fuzz = util::random_range(0.0, 0.5);
+                    material = Rc::new(Metal::new(albedo, fuzz));
+                    world.add(Box::new(Sphere::new(center, 0.2, material)));
+                } else {
+                    // glass
+                    material = Rc::new(Dielectric::new(1.5));
+                    world.add(Box::new(Sphere::new(center, 0.2, material)));
+                }
+            }
+        }
+    }
+
+    let mat1 = Rc::new(Dielectric::new(1.5));
+    world.add(Box::new(Sphere::new(Point3::new(0.0, 1.0, 0.0), 1.0, mat1)));
+
+    let mat2 = Rc::new(Lambertian::new(Colour::new(0.4, 0.2, 0.1)));
+    world.add(Box::new(Sphere::new(Point3::new(-4.0, 1.0, 0.0), 1.0, mat2)));
+
+    let mat3 = Rc::new(Metal::new(Colour::new(0.7, 0.6, 0.5), 0.0));
+    world.add(Box::new(Sphere::new(Point3::new(4.0, 1.0, 0.0), 1.0, mat3)));
+
+    world
+}
+
 fn ray_colour(ray: &Ray, world: &HittableList, depth: usize) -> Colour {
     if depth == 0 {
         Colour::default()
@@ -45,39 +94,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     // PPM Header
     writeln!(&mut output, "P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT)?;
     // Image Contents
-    let mut world = HittableList::new();
-    world.add(Box::new(Sphere::new(
-        Point3::new(0.0, 0.0, -1.0),
-        0.5,
-        Rc::new(Lambertian::new(Colour::new(0.1, 0.2, 0.5))),
-    )));
-    world.add(Box::new(Sphere::new(
-        Point3::new(0.0, -100.5, -1.0),
-        100.0,
-        Rc::new(Lambertian::new(Colour::new(0.8, 0.8, 0.0))),
-    )));
+    let world = random_scene();
 
-    world.add(Box::new(Sphere::new(
-        Point3::new(1.0, 0.0, -1.0),
-        0.5,
-        Rc::new(Metal::new(Colour::new(0.8, 0.6, 0.2), 0.0)),
-    )));
-    world.add(Box::new(Sphere::new(
-        Point3::new(-1.0, 0.0, -1.0),
-        0.5,
-        Rc::new(Dielectric::new(1.5)),
-    )));
-    world.add(Box::new(Sphere::new(
-        Point3::new(-1.0, 0.0, -1.0),
-        -0.45,
-        Rc::new(Dielectric::new(1.5)),
-    )));
-
-    let look_from = Point3::new(3.0, 3.0, 2.0);
-    let look_at = Point3::new(0.0, 0.0, -1.0);
+    let look_from = Point3::new(13.0, 2.0, 3.0);
+    let look_at = Point3::default();
     let vup = Point3::new(0.0, 1.0, 0.0);
-    let dist_to_focus = (look_from-look_at).length();
-    let aperture = 2.0;
+    let dist_to_focus = 10.0;
+    let aperture = 0.1;
 
     let cam = Camera::new(
         look_from,
